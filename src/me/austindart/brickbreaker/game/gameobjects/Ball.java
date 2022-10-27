@@ -84,7 +84,7 @@ public class Ball extends GameObject
 
         if(yCoord >= 620)
         {
-            game.end();
+            game.end(false);
         }
     }
 

@@ -56,6 +56,10 @@ public class Game
     {
         player.tick();
         ball.tick();
+        if(shouldWin() && running)
+        {
+            end(true);
+        }
     }
 
     private void startOver()
@@ -71,8 +75,31 @@ public class Game
         start();
     }
 
-    public void end()
+    private boolean shouldWin()
     {
+        for(Brick brick : bricks)
+        {
+            if(brick.isEnabled())
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void end(boolean win)
+    {
+        running = false;
+        if(!win)
+        {
+            endScreen.setText("Game Over! Press 'R' to restart.");
+        }
+        else
+        {
+            endScreen.setText("You Won! Press 'R' to restart.");
+        }
+        endScreen.setEnabled(true);
+
         for(Brick brick : bricks)
         {
             brick.setEnabled(false);
@@ -80,7 +107,6 @@ public class Game
 
         player.setEnabled(false);
         ball.setEnabled(false);
-        endScreen.setEnabled(true);
         running = false;
         Runnable runnable = () ->
         {
