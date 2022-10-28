@@ -65,6 +65,13 @@ public class BrickBreakerPanel extends JPanel
             g.drawChars(game.getEndScreen().getText().toCharArray(), 0,
                     game.getEndScreen().getText().length(), 400 - (2 * game.getEndScreen().getText().length()), 300);
         }
+
+        if(game.getTPSDisplay().isEnabled())
+        {
+            g.setColor(Color.green);
+            g.drawChars(game.getTPSDisplay().getText().toCharArray(), 0, game.getTPSDisplay().getText().length()
+                    , 0, 20);
+        }
     }
 
 }

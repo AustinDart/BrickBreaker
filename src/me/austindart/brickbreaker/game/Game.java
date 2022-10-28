@@ -1,9 +1,6 @@
 package me.austindart.brickbreaker.game;
 
-import me.austindart.brickbreaker.game.gameobjects.Ball;
-import me.austindart.brickbreaker.game.gameobjects.Brick;
-import me.austindart.brickbreaker.game.gameobjects.EndScreen;
-import me.austindart.brickbreaker.game.gameobjects.Player;
+import me.austindart.brickbreaker.game.gameobjects.*;
 import me.austindart.brickbreaker.game.inputs.Keyboard;
 import me.austindart.brickbreaker.gui.guiobjects.BrickBreakerPanel;
 
@@ -18,6 +15,7 @@ public class Game
     private final Ball ball;
     private final List<Brick> bricks;
     private final EndScreen endScreen;
+    private final TPSDisplay tpsDisplay;
 
     private boolean running;
 
@@ -27,6 +25,7 @@ public class Game
         ball = initBall();
         bricks = initBricks();
         endScreen = initEndScreen();
+        tpsDisplay = initTPS();
         start();
     }
 
@@ -41,6 +40,7 @@ public class Game
                 try
                 {
                     BrickBreakerPanel.getInstance(this).updateUI();
+                    calculateTPS();
                     Thread.sleep(20);
                 } catch (InterruptedException e)
                 {
@@ -56,10 +56,12 @@ public class Game
     {
         player.tick();
         ball.tick();
+        tpsDisplay.tick();
         if(shouldWin() && running)
         {
             end(true);
         }
+        ticksPerSecond++;
     }
 
     private void startOver()
@@ -85,6 +87,29 @@ public class Game
             }
         }
         return true;
+    }
+
+    private int ticksPerSecond;
+    private int latestTicksPerSecond;
+    private long startTime;
+    private void calculateTPS()
+    {
+        if(startTime == 0)
+        {
+            startTime = System.currentTimeMillis();
+        }
+        long now = System.currentTimeMillis();
+        if(now - startTime >= 1000)
+        {
+            latestTicksPerSecond = ticksPerSecond;
+            ticksPerSecond = 0;
+            startTime = 0;
+        }
+    }
+
+    public int getTicksPerSecond()
+    {
+        return latestTicksPerSecond;
     }
 
     public void end(boolean win)
@@ -157,6 +182,11 @@ public class Game
         return endScreen;
     }
 
+    private TPSDisplay initTPS()
+    {
+        return new TPSDisplay(this);
+    }
+
     public Player getPlayer()
     {
         return player;
@@ -175,6 +205,11 @@ public class Game
     public EndScreen getEndScreen()
     {
         return endScreen;
+    }
+
+    public TPSDisplay getTPSDisplay()
+    {
+        return tpsDisplay;
     }
 
 }
